@@ -4,6 +4,7 @@ import pandas as pd
 import webbrowser
 import os
 from threading import Lock
+import time
 
 # Initialize the BGG client
 bgg = BGGClient()
@@ -18,10 +19,18 @@ combined_collection = {}
 print_lock = Lock()
 
 
-# Function to chunk the game IDs
-def chunk_list(lst, chunk_size):
-    for i in range(0, len(lst), chunk_size):
-        yield lst[i:i + chunk_size]
+# Function to retry fetching collections
+def fetch_with_retries(func, *args, max_retries=3, **kwargs):
+    for attempt in range(max_retries):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            if attempt < max_retries - 1:
+                print(f"Error fetching data, retrying... ({attempt + 1}/{max_retries})")
+                time.sleep(1)  # Wait before retrying
+            else:
+                print(f"Failed to retrieve data after {max_retries} retries: {e}")
+    return None
 
 
 # Function to fetch collection for a user
@@ -31,17 +40,16 @@ def fetch_user_collection(username):
         'errors': []
     }
 
-    try:
-        # Fetch user's collection
-        collection = bgg.collection(username, wishlist=False)
+    collection = fetch_with_retries(bgg.collection, username, wishlist=False)
+    if collection is not None:
         user_collection_data['collection'] = collection
-    except Exception as e:
-        user_collection_data['errors'].append(f"Failed to fetch collection for {username}: {e}")
+        print(f"Collection for {username} fetched: {len(collection)} games")
+    else:
+        user_collection_data['errors'].append(f"No collection found for {username}")
 
     return user_collection_data
 
 
-# Function to process the fetched collection
 def process_collection(username, collection):
     global combined_collection
     total_games = len(collection)  # Track total games for this user
@@ -50,9 +58,6 @@ def process_collection(username, collection):
     # Collect game IDs for batch fetching
     game_ids = [str(game.id) for game in collection]  # Ensure game IDs are strings
     print(f"Fetching game details for {username} - Total games: {total_games}")
-
-    # Store the initial progress message
-    progress_message = f"Fetching {username}: 0 / {total_games} games fetched."
 
     # Fetch details for game IDs in chunks
     game_details_list = []
@@ -82,50 +87,94 @@ def process_collection(username, collection):
         game_details = next((g for g in game_details_list if g.id == game_id), None)
 
         if game_details:
-            bgg_rank = "-"
-            # Extract BGG rank
-            for rank in game_details.stats.get("ranks", []):
-                if rank.get("name") == "boardgame":
-                    rank_value = rank.get("value")  # Get the rank value
-                    if rank_value not in (None, "N/A"):  # Check for valid value
-                        bgg_rank = str(int(float(rank_value)))  # Convert to float first to handle any decimals, then to int, then to str
-                    break
+            print(f"\nProcessing game: {game_details.name} (ID: {game_details.id})")  # Debug output
 
-            # Check if game is already in the combined collection
-            if game_id not in combined_collection:
-                # Initialize the game entry
-                combined_collection[game_id] = {
-                    "name": game.name,
-                    "total_plays": game.numplays,
-                    "bgg_rank": bgg_rank,
-                    "rating": round(game_details.rating_average, 1) if game_details.rating_average is not None else "-",  # Round to 1 decimal
-                    "weight": round(game_details.stats.get("averageweight", 0), 1) if game_details.stats.get("averageweight") is not None else "-",  # Round to 1 decimal
-                    "min_players": game_details.min_players,
-                    "max_players": game_details.max_players,
-                    "playtime": game_details.playing_time,
-                    "owners": username  # Store as a string
-                }
+            if game_details.expansion:
+                print(f"\nSkipping expansion: {game_details.name}")  # Debug output
+                continue  # Skip expansions
             else:
-                # If game is already there, append the current username to the Owners string
-                combined_collection[game_id]["owners"] += f", {username}"  # Append to the existing string
-                combined_collection[game_id]["total_plays"] += game.numplays
+                print(f"\nAdding Base game: {game_details.name}")  # Debug output
+
+            print(combined_collection)
+
+            bgg_rank = "-"
+            try:
+                # Extract BGG rank
+                for rank in game_details.stats.get("ranks", []):
+                    if rank.get("name") == "boardgame":
+                        rank_value = rank.get("value")
+                        if rank_value not in (None, "N/A"):
+                            bgg_rank = str(int(float(rank_value)))  # Convert to string after removing decimals
+                        break
+
+                # Check if game is already in the combined collection
+                if game_id not in combined_collection:
+                    # Initialize the game entry
+                    combined_collection[game_id] = {
+                        "name": game.name,
+                        "total_plays": game.numplays,
+                        "bgg_rank": bgg_rank,
+                        "rating": round(game_details.rating_average, 1) if game_details.rating_average is not None else "-",
+                        "weight": round(game_details.stats.get("averageweight", 0), 1) if game_details.stats.get("averageweight") is not None else "-",
+                        "min_players": game_details.min_players,
+                        "max_players": game_details.max_players,
+                        "playtime": game_details.playing_time,
+                        "owners": username,
+                        "expansions": []  # Initialize expansions list
+                    }
+                    with print_lock:
+                        print(f"\nAdded base game: {game.name} to combined collection.")  # Debug message
+                else:
+                    # If game is already there, append the current username to the Owners string
+                    combined_collection[game_id]["owners"] += f", {username}"  # Append to the existing string
+                    combined_collection[game_id]["total_plays"] += game.numplays
+
+                # Debug message for successfully processed game
+                with print_lock:
+                    print(f"\nProcessed game: {game.name} - ID: {game_id}")
+
+            except Exception as e:
+                with print_lock:
+                    print(f"\nError processing game details for {game.name}: {e}")
+
+        else:
+            with print_lock:
+                print(f"\nNo details found for game ID: {game_id}")
+
+    # Debug output for combined collection after processing
+    with print_lock:
+        if not combined_collection:
+            print(f"\nCombined collection is empty after processing {username}.")
+        else:
+            print(f"\nCombined collection after processing {username}: {len(combined_collection)} games added.")
+
+
+# Function to chunk the game IDs
+def chunk_list(lst, chunk_size):
+    for i in range(0, len(lst), chunk_size):
+        yield lst[i:i + chunk_size]
 
 
 # Main function to fetch and process user collections using threads
 def main():
-    # First, fetch collections to get the total game count
     user_collections = []
     total_games = 0  # Total number of games across all users
 
+    print("Fetching collections for users...")
+
+    # Fetch collections for each user
     for username in usernames:
         user_data = fetch_user_collection(username)
         if user_data['collection']:
             user_collections.append(user_data['collection'])
             total_games += len(user_data['collection'])  # Accumulate the total games for all users
+        else:
+            print(f"Collection for {username} not found.")
 
     # Now process each user's collection
     with ThreadPoolExecutor() as executor:
-        futures = {executor.submit(process_collection, username, collection): username for username, collection in zip(usernames, user_collections)}
+        futures = {executor.submit(process_collection, username, collection): username for username, collection in
+                   zip(usernames, user_collections)}
 
         for future in as_completed(futures):
             username = futures[future]
@@ -134,6 +183,13 @@ def main():
             except Exception as e:
                 with print_lock:
                     print(f"\nAn error occurred while processing data for {username}: {e}")
+
+    # Check combined collection for contents
+    if not combined_collection:
+        print("Combined collection is empty. No games were processed.")
+        return
+    else:
+        print(f"Total games processed: {len(combined_collection)}")
 
     # Sort the combined collection by game name
     sorted_collection = sorted(combined_collection.values(), key=lambda x: x['name'])
@@ -158,25 +214,32 @@ def main():
     output_file = "combined_board_game_collection.html"
     html = df.to_html(index=False, escape=False)
 
-    # Adding custom styling and DataTables integration
+    # Adding custom styling for the table
     styled_html = f"""
         <html>
             <head>
                 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
-                <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+                <script type="text/javascript" charset="utf-8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                <script type="text/javascript" charset="utf-8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
                 <script type="text/javascript">
                     $(document).ready(function() {{
-                        $('#gameTable').DataTable();
+                        $('#gameTable').DataTable({{
+                            "order": [[0, "asc"]],
+                            "columnDefs": [{{
+                                "targets": [8], // Assuming 'Owners' is the last column (index 8)
+                                "visible": true,
+                                "searchable": false
+                            }}]
+                        }});
                     }});
                 </script>
                 <style>
                     table {{
                         width: 100%;
                         border-collapse: collapse;
+                        text-align: left;
                     }}
                     th, td {{
-                        text-align: left;
                         padding: 8px;
                         border: 1px solid #ddd;
                     }}
@@ -186,17 +249,17 @@ def main():
                 </style>
             </head>
             <body>
+                <h2>Combined Board Game Collection</h2>
                 {html.replace('<table', '<table id="gameTable"')}
             </body>
         </html>
-        """
+    """
 
-    with open(output_file, "w") as f:
+    # Write the styled HTML to a file
+    with open(output_file, "w", encoding="utf-8") as f:
         f.write(styled_html)
 
-    print(f"Output written to {os.path.realpath(output_file)}")
-
-    # Open the HTML file in the default web browser
+    # Open the output file in the web browser
     webbrowser.open('file://' + os.path.realpath(output_file))
 
 
