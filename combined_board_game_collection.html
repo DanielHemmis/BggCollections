@@ -8,8 +8,13 @@
                     $(document).ready(function() {
                         $('#gameTable').DataTable({
                             "order": [[0, "asc"]],
+                            "lengthMenu": [[10, 25, 50, 100, -1], ["10", "25", "50", "100", "ALL"]],
+                            "pageLength": 100,
+                            "language": {
+                                "lengthMenu": "Show _MENU_ games"
+                            },
                             "columnDefs": [{
-                                "targets": [9], // Assuming 'Owners' is the last column (index 9)
+                                "targets": [10],
                                 "visible": true,
                                 "searchable": false
                             }]
@@ -17,25 +22,77 @@
                     });
                 </script>
                 <style>
+                    body {
+                        background-color: #1e1e1e;
+                        color: #ffffff;
+                        font-family: Arial, sans-serif;
+                    }
                     table {
                         width: 100%;
                         border-collapse: collapse;
                         text-align: left;
+                        color: #ffffff;
                     }
                     th, td {
                         padding: 8px;
-                        border: 1px solid #ddd;
+                        border: 1px solid #444;
                     }
                     th {
-                        background-color: #f2f2f2;
+                        background-color: #333;
+                        color: #ff5100; /* Orange highlight */
+                    }
+                    tr:nth-child(even) {
+                        background-color: #2a2a2a;
+                    }
+                    tr:nth-child(odd) {
+                        background-color: #1e1e1e;
+                    }
+                    td img {
+                        display: block;
+                        margin: 0 auto;
+                        max-height: 200px;
+                        max-width: 200px;
+                    }
+                    a {
+                        color: #ff5100;
+                        text-decoration: none;
+                    }
+                    a:hover {
+                        text-decoration: underline;
+                    }
+                    .header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        background-color: #1e1e1e;
+                        padding: 10px;
+                    }
+                    .header img {
+                        height: 80px;
+                        margin-left: 20px;
+                    }
+                    .header h2 {
+                        color: #ff5100;
+                        font-size: 36px;
+                        margin: 0;
+                    }
+                    .header h3 {
+                        color: white;
                     }
                 </style>
             </head>
             <body>
-                <h2>Headline</h2>
+                <div class="header">
+                    <h2>Combined BGG Collection</h2>
+                    <h3><a href="https://boardgamegeek.com/user/AtomikVoid" target="_blank">AtomikVoid</a> | <a href="https://boardgamegeek.com/user/Krizszs" target="_blank">Krizszs</a></h3>
+                    <a href="https://boardgamegeek.com/" target="_blank">
+                        <img src="https://cf.geekdo-images.com/HZy35cmzmmyV9BarSuk6ug__imagepagezoom/img/pXXf-xfYw0boHLfc3sL_g1nsLtY=/fit-in/1200x900/filters:no_upscale():strip_icc()/pic7779581.png" alt="Header Image">
+                    </a>                
+                </div>
                 <table id="gameTable" border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
+      <th>Image</th>
       <th>Game Name</th>
       <th>Total Plays</th>
       <th>BGG Rank</th>
@@ -50,402 +107,7 @@
   </thead>
   <tbody>
     <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/104006">Village</a></td>
-      <td>6</td>
-      <td>224</td>
-      <td>7.5</td>
-      <td>3.1</td>
-      <td>2</td>
-      <td>4</td>
-      <td>90</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/118048">Targi</a></td>
-      <td>4</td>
-      <td>153</td>
-      <td>7.6</td>
-      <td>2.3</td>
-      <td>2</td>
-      <td>2</td>
-      <td>60</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/129622">Love Letter</a></td>
-      <td>9</td>
-      <td>348</td>
-      <td>7.2</td>
-      <td>1.2</td>
-      <td>2</td>
-      <td>4</td>
-      <td>20</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/13">CATAN</a></td>
-      <td>16</td>
-      <td>559</td>
-      <td>7.1</td>
-      <td>2.3</td>
-      <td>3</td>
-      <td>4</td>
-      <td>120</td>
-      <td>[<a href="https://boardgamegeek.com/boardgame/926">CATAN: Cities & Knights</a>, <a href="https://boardgamegeek.com/boardgame/325">CATAN: Seafarers</a>]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/1465">Wizard</a></td>
-      <td>27</td>
-      <td>851</td>
-      <td>7.0</td>
-      <td>1.7</td>
-      <td>3</td>
-      <td>6</td>
-      <td>45</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/161970">Alchemists</a></td>
-      <td>3</td>
-      <td>160</td>
-      <td>7.6</td>
-      <td>3.9</td>
-      <td>2</td>
-      <td>4</td>
-      <td>120</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/168215">Saboteur: The Duel</a></td>
-      <td>6</td>
-      <td>5389</td>
-      <td>6.0</td>
-      <td>1.3</td>
-      <td>1</td>
-      <td>2</td>
-      <td>30</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/171131">Captain Sonar</a></td>
-      <td>2</td>
-      <td>222</td>
-      <td>7.5</td>
-      <td>2.2</td>
-      <td>2</td>
-      <td>8</td>
-      <td>60</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/173346">7 Wonders Duel</a></td>
-      <td>13</td>
-      <td>19</td>
-      <td>8.1</td>
-      <td>2.2</td>
-      <td>2</td>
-      <td>2</td>
-      <td>30</td>
-      <td>[<a href="https://boardgamegeek.com/boardgame/202976">7 Wonders Duel: Pantheon</a>]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/181304">Mysterium</a></td>
-      <td>4</td>
-      <td>399</td>
-      <td>7.2</td>
-      <td>1.9</td>
-      <td>2</td>
-      <td>7</td>
-      <td>42</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/1927">Munchkin</a></td>
-      <td>0</td>
-      <td>5969</td>
-      <td>5.9</td>
-      <td>1.8</td>
-      <td>3</td>
-      <td>6</td>
-      <td>120</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/196379">Shit Happens</a></td>
-      <td>2</td>
-      <td>26906</td>
-      <td>5.4</td>
-      <td>1.1</td>
-      <td>2</td>
-      <td>8</td>
-      <td>60</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/231484">Carnival of Monsters</a></td>
-      <td>5</td>
-      <td>1361</td>
-      <td>7.2</td>
-      <td>2.1</td>
-      <td>2</td>
-      <td>5</td>
-      <td>45</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/233961">Claim</a></td>
-      <td>18</td>
-      <td>1278</td>
-      <td>6.9</td>
-      <td>1.7</td>
-      <td>2</td>
-      <td>2</td>
-      <td>25</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/244522">That's Pretty Clever!</a></td>
-      <td>2</td>
-      <td>185</td>
-      <td>7.6</td>
-      <td>1.9</td>
-      <td>1</td>
-      <td>4</td>
-      <td>30</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/244916">Drop It</a></td>
-      <td>7</td>
-      <td>1710</td>
-      <td>6.9</td>
-      <td>1.1</td>
-      <td>2</td>
-      <td>4</td>
-      <td>30</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/249763">Claim 2</a></td>
-      <td>8</td>
-      <td>2145</td>
-      <td>7.0</td>
-      <td>1.6</td>
-      <td>2</td>
-      <td>2</td>
-      <td>25</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/254640">Just One</a></td>
-      <td>9</td>
-      <td>147</td>
-      <td>7.6</td>
-      <td>1.0</td>
-      <td>3</td>
-      <td>7</td>
-      <td>60</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/263918">Cartographers</a></td>
-      <td>2</td>
-      <td>154</td>
-      <td>7.6</td>
-      <td>1.9</td>
-      <td>1</td>
-      <td>100</td>
-      <td>45</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/266192">Wingspan</a></td>
-      <td>12</td>
-      <td>29</td>
-      <td>8.0</td>
-      <td>2.5</td>
-      <td>1</td>
-      <td>5</td>
-      <td>70</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/268201">Dice Throne</a></td>
-      <td>7</td>
-      <td>1126</td>
-      <td>7.7</td>
-      <td>2.1</td>
-      <td>2</td>
-      <td>6</td>
-      <td>40</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/269207">The Taverns of Tiefenthal</a></td>
-      <td>4</td>
-      <td>248</td>
-      <td>7.6</td>
-      <td>2.7</td>
-      <td>2</td>
-      <td>4</td>
-      <td>60</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/283609">Rubik's Cage</a></td>
-      <td>8</td>
-      <td>17000</td>
-      <td>6.4</td>
-      <td>1.2</td>
-      <td>2</td>
-      <td>4</td>
-      <td>20</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/284435">Nova Luna</a></td>
-      <td>5</td>
-      <td>584</td>
-      <td>7.3</td>
-      <td>1.9</td>
-      <td>1</td>
-      <td>4</td>
-      <td>60</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/287938">Kitchen Rush (Revised Edition)</a></td>
-      <td>0</td>
-      <td>1426</td>
-      <td>7.5</td>
-      <td>2.1</td>
-      <td>2</td>
-      <td>4</td>
-      <td>60</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/3137">Anno Domini: Erfindungen</a></td>
-      <td>2</td>
-      <td>4646</td>
-      <td>6.7</td>
-      <td>1.5</td>
-      <td>2</td>
-      <td>8</td>
-      <td>30</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/316412">The LOOP</a></td>
-      <td>2</td>
-      <td>502</td>
-      <td>7.7</td>
-      <td>2.8</td>
-      <td>1</td>
-      <td>4</td>
-      <td>60</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/318243">HITSTER</a></td>
-      <td>13</td>
-      <td>885</td>
-      <td>7.7</td>
-      <td>1.0</td>
-      <td>2</td>
-      <td>10</td>
-      <td>30</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/320">Scrabble</a></td>
-      <td>3</td>
-      <td>2253</td>
-      <td>6.3</td>
-      <td>2.1</td>
-      <td>2</td>
-      <td>4</td>
-      <td>90</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/336794">Galaxy Trucker (Second Edition)</a></td>
-      <td>2</td>
-      <td>623</td>
-      <td>7.5</td>
-      <td>2.3</td>
-      <td>2</td>
-      <td>4</td>
-      <td>30</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/36218">Dominion</a></td>
-      <td>50</td>
-      <td>130</td>
-      <td>7.6</td>
-      <td>2.3</td>
-      <td>2</td>
-      <td>4</td>
-      <td>30</td>
-      <td>[<a href="https://boardgamegeek.com/boardgame/171915">Dominion: Adventures</a>, <a href="https://boardgamegeek.com/boardgame/172592">Dominion: Alchemisten & Reiche Ernte – Mixbox</a>, <a href="https://boardgamegeek.com/boardgame/125403">Dominion: Dark Ages</a>, <a href="https://boardgamegeek.com/boardgame/104557">Dominion: Hinterlands</a>, <a href="https://boardgamegeek.com/boardgame/257673">Dominion: Renaissance</a>, <a href="https://boardgamegeek.com/boardgame/51811">Dominion: Seaside</a>]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/366161">Wingspan Asia</a></td>
-      <td>1</td>
-      <td>100</td>
-      <td>8.3</td>
-      <td>2.7</td>
-      <td>1</td>
-      <td>2</td>
-      <td>70</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
-      <td><a href="https://boardgamegeek.com/boardgame/370591">Dorfromantik: The Board Game</a></td>
-      <td>2</td>
-      <td>425</td>
-      <td>7.6</td>
-      <td>1.7</td>
-      <td>1</td>
-      <td>6</td>
-      <td>60</td>
-      <td>[]</td>
-      <td>Krizszs</td>
-    </tr>
-    <tr>
+      <td><img src="https://cf.geekdo-images.com/LSvZr6UroXeY5w_6JA1czw__thumb/img/l0LWgQK_ErVTvnKTgvT9HO04MXI=/fit-in/200x150/filters:strip_icc()/pic7734900.png"></td>
       <td><a href="https://boardgamegeek.com/boardgame/400205">5 Towers</a></td>
       <td>0</td>
       <td>2493</td>
@@ -454,10 +116,336 @@
       <td>2</td>
       <td>5</td>
       <td>30</td>
-      <td>[]</td>
+      <td></td>
       <td>Krizszs</td>
     </tr>
     <tr>
+      <td><img src="https://cf.geekdo-images.com/bFZKvxPJ23dzGwgpOg-mIA__thumb/img/DcrVgGjSLsCZqXvEE_s0a1JSdn4=/fit-in/200x150/filters:strip_icc()/pic3213622.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/207830">5-Minute Dungeon</a></td>
+      <td>1</td>
+      <td>1029</td>
+      <td>6.9</td>
+      <td>1.1</td>
+      <td>2</td>
+      <td>5</td>
+      <td>30</td>
+      <td><a href="https://boardgamegeek.com/boardgame/253170">5-Minute Dungeon: Curses! Foiled Again!</a></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/zdagMskTF7wJBPjX74XsRw__thumb/img/gV1-ckZSIC-dCxxpq1Y7GmPITzQ=/fit-in/200x150/filters:strip_icc()/pic2576399.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/173346">7 Wonders Duel</a></td>
+      <td>14</td>
+      <td>19</td>
+      <td>8.1</td>
+      <td>2.2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>30</td>
+      <td><a href="https://boardgamegeek.com/boardgame/202976">7 Wonders Duel: Pantheon</a></td>
+      <td>Krizszs, AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/ztNshEv3Fsm46HCJaEOFPw__thumb/img/-a0oJ_E49V_7PDW78W7KIyS3rF8=/fit-in/200x150/filters:strip_icc()/pic2241156.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/161970">Alchemists</a></td>
+      <td>3</td>
+      <td>160</td>
+      <td>7.6</td>
+      <td>3.9</td>
+      <td>2</td>
+      <td>4</td>
+      <td>120</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/u4VgS78InJxqxX1ou6N-mg__thumb/img/L3hh7YML-qiYQkaac9Uji4WDze8=/fit-in/200x150/filters:strip_icc()/pic6675171.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/351969">All Time Wrestling</a></td>
+      <td>0</td>
+      <td>8531</td>
+      <td>8.5</td>
+      <td>2.0</td>
+      <td>1</td>
+      <td>4</td>
+      <td>60</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/Rpvq8pH8ydMX9vbH1_-nww__thumb/img/R7Ke3ZK8t0DLGgw9T4AyhTuCTkQ=/fit-in/200x150/filters:strip_icc()/pic661111.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/3137">Anno Domini: Erfindungen</a></td>
+      <td>2</td>
+      <td>4646</td>
+      <td>6.7</td>
+      <td>1.5</td>
+      <td>2</td>
+      <td>8</td>
+      <td>30</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/wjJsquLxPJc2WmvJ7SqVbQ__thumb/img/-yFUlIfonB9pRxJxYpLSYygfUfU=/fit-in/200x150/filters:strip_icc()/pic5240569.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/302388">Back to the Future: Back in Time</a></td>
+      <td>0</td>
+      <td>1314</td>
+      <td>7.2</td>
+      <td>2.4</td>
+      <td>2</td>
+      <td>4</td>
+      <td>50</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/lqmt2Oti_qJS65XqHcB8AA__thumb/img/EDOmDbRhLy4za2PHkJ5IbhNxZmk=/fit-in/200x150/filters:strip_icc()/pic5146864.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/10547">Betrayal at House on the Hill</a></td>
+      <td>3</td>
+      <td>697</td>
+      <td>7.0</td>
+      <td>2.4</td>
+      <td>3</td>
+      <td>6</td>
+      <td>60</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/8SADtu_4zBH_UJrCo935Iw__thumb/img/vwTEQOWA3Mw__ztkTMulOgJ82Pw=/fit-in/200x150/filters:strip_icc()/pic6348964.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/11">Bohnanza</a></td>
+      <td>1</td>
+      <td>527</td>
+      <td>7.1</td>
+      <td>1.7</td>
+      <td>2</td>
+      <td>7</td>
+      <td>45</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/W3Bsga_uLP9kO91gZ7H8yw__thumb/img/8a9HeqFydO7Uun_le9bXWPnidcA=/fit-in/200x150/filters:strip_icc()/pic2419375.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/13">CATAN</a></td>
+      <td>16</td>
+      <td>559</td>
+      <td>7.1</td>
+      <td>2.3</td>
+      <td>3</td>
+      <td>4</td>
+      <td>120</td>
+      <td><a href="https://boardgamegeek.com/boardgame/926">CATAN: Cities & Knights</a> | <a href="https://boardgamegeek.com/boardgame/325">CATAN: Seafarers</a></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/b4qSA5fvVJe9QQOKPCMoNA__thumb/img/0yWeezsHg0jGc2flURUSlyqxK2M=/fit-in/200x150/filters:strip_icc()/pic2907864.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/155362">Ca$h 'n Guns: Second Edition</a></td>
+      <td>8</td>
+      <td>972</td>
+      <td>6.8</td>
+      <td>1.2</td>
+      <td>4</td>
+      <td>8</td>
+      <td>30</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/Dpu5nFJu4UUJ4Y50WyKueg__thumb/img/tRPNrLtteyfINpaFLLqEjyfTA10=/fit-in/200x150/filters:strip_icc()/pic7069368.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/171131">Captain Sonar</a></td>
+      <td>2</td>
+      <td>222</td>
+      <td>7.5</td>
+      <td>2.2</td>
+      <td>2</td>
+      <td>8</td>
+      <td>60</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/x8at1-d383sIWAz4sSBYNg__thumb/img/szoyezQitjx1BS_nuQ2ln0ApMqg=/fit-in/200x150/filters:strip_icc()/pic2231793.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/164127">Carcassonne Big Box 5</a></td>
+      <td>3</td>
+      <td>999999</td>
+      <td>7.9</td>
+      <td>2.2</td>
+      <td>2</td>
+      <td>8</td>
+      <td>40</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/epQCPLfMbtaKiXmz7uz4PA__thumb/img/b1rgSddValol8h1Ock8s_9peBPc=/fit-in/200x150/filters:strip_icc()/pic4856068.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/231484">Carnival of Monsters</a></td>
+      <td>5</td>
+      <td>1361</td>
+      <td>7.2</td>
+      <td>2.1</td>
+      <td>2</td>
+      <td>5</td>
+      <td>45</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/GifbnAmsA4lfEcDkeaC9VA__thumb/img/TTxZzwbna07hMcPQ0xaFtT10egE=/fit-in/200x150/filters:strip_icc()/pic4397932.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/263918">Cartographers</a></td>
+      <td>2</td>
+      <td>154</td>
+      <td>7.6</td>
+      <td>1.9</td>
+      <td>1</td>
+      <td>100</td>
+      <td>45</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/1bihoShOuqaCuZJXB3Q2gQ__thumb/img/dvGQkdnwtcwAmcxHR_7J17OsLjQ=/fit-in/200x150/filters:strip_icc()/pic3936124.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/232832">Century: Golem Edition</a></td>
+      <td>4</td>
+      <td>256</td>
+      <td>7.6</td>
+      <td>1.7</td>
+      <td>2</td>
+      <td>5</td>
+      <td>45</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/XTnU0KdAC1l4WxxGr46F-g__thumb/img/68PxtuISom2wysDawXSuHaIdT5U=/fit-in/200x150/filters:strip_icc()/pic3714302.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/233961">Claim</a></td>
+      <td>18</td>
+      <td>1278</td>
+      <td>6.9</td>
+      <td>1.7</td>
+      <td>2</td>
+      <td>2</td>
+      <td>25</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/lLKWqJzEFSlOU8Cs5G54dg__thumb/img/DLLZXQ3IX8VVEu5Ck8BVLO_-53w=/fit-in/200x150/filters:strip_icc()/pic4059108.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/249763">Claim 2</a></td>
+      <td>8</td>
+      <td>2145</td>
+      <td>7.0</td>
+      <td>1.6</td>
+      <td>2</td>
+      <td>2</td>
+      <td>25</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/lHadyVLPUQfNz_qV6MMp_Q__thumb/img/zWiETTyIp4Xo1o0l2mtOdt3G-ls=/fit-in/200x150/filters:strip_icc()/pic3218988.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/11971">Cockroach Poker</a></td>
+      <td>4</td>
+      <td>1047</td>
+      <td>6.8</td>
+      <td>1.1</td>
+      <td>2</td>
+      <td>6</td>
+      <td>20</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/0d1EaMVmAiIBROI2QstFSQ__thumb/img/J-thZd7Pbbh1CE8QHcvEE4w8FBE=/fit-in/200x150/filters:strip_icc()/pic3596681.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/224037">Codenames: Duet</a></td>
+      <td>2</td>
+      <td>254</td>
+      <td>7.4</td>
+      <td>1.4</td>
+      <td>2</td>
+      <td>2</td>
+      <td>30</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/0I7U0tz-RgpIFWWco5FKLA__thumb/img/idWdk9oQtUtvE7G_WwWUa7qoYNE=/fit-in/200x150/filters:strip_icc()/pic5612161.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/314503">Codex Naturalis</a></td>
+      <td>1</td>
+      <td>961</td>
+      <td>7.2</td>
+      <td>1.8</td>
+      <td>1</td>
+      <td>4</td>
+      <td>30</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/2HKX0QANk_DY7CIVK5O5fQ__thumb/img/zcjkqn_HYDIIyVAZaAxJIkurQRg=/fit-in/200x150/filters:strip_icc()/pic2869710.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/158899">Colt Express</a></td>
+      <td>2</td>
+      <td>515</td>
+      <td>7.1</td>
+      <td>1.8</td>
+      <td>2</td>
+      <td>6</td>
+      <td>40</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/XPMVnqs8kBmgpUJ372vDQg__thumb/img/ecHhCK0ZQj-dIo6YO5VcohwasKo=/fit-in/200x150/filters:strip_icc()/pic7596364.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/380887">Deduckto</a></td>
+      <td>1</td>
+      <td>7981</td>
+      <td>7.4</td>
+      <td>1.3</td>
+      <td>2</td>
+      <td>4</td>
+      <td>15</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/viFjJIzD0wLeVlvHoWbSDA__thumb/img/1JFl5BzuqEVrI2M9uXOGMovvTmE=/fit-in/200x150/filters:strip_icc()/pic6937670.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/362860">Dice Hunters of Therion</a></td>
+      <td>3</td>
+      <td>6234</td>
+      <td>6.5</td>
+      <td>1.1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>30</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/fx_i2HMyAeCyAh94fH7a1Q__thumb/img/qJVeKAWpB7REM6lraF1sDQy4Ciw=/fit-in/200x150/filters:strip_icc()/pic4490309.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/268201">Dice Throne</a></td>
+      <td>7</td>
+      <td>1126</td>
+      <td>7.7</td>
+      <td>2.1</td>
+      <td>2</td>
+      <td>6</td>
+      <td>40</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/j6iQpZ4XkemZP07HNCODBA__thumb/img/B2u2ghwlmI_qsUtCwuvcbnBcIqU=/fit-in/200x150/filters:strip_icc()/pic394356.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/36218">Dominion</a></td>
+      <td>50</td>
+      <td>130</td>
+      <td>7.6</td>
+      <td>2.3</td>
+      <td>2</td>
+      <td>4</td>
+      <td>30</td>
+      <td><a href="https://boardgamegeek.com/boardgame/171915">Dominion: Adventures</a> | <a href="https://boardgamegeek.com/boardgame/172592">Dominion: Alchemisten & Reiche Ernte – Mixbox</a> | <a href="https://boardgamegeek.com/boardgame/125403">Dominion: Dark Ages</a> | <a href="https://boardgamegeek.com/boardgame/104557">Dominion: Hinterlands</a> | <a href="https://boardgamegeek.com/boardgame/257673">Dominion: Renaissance</a> | <a href="https://boardgamegeek.com/boardgame/51811">Dominion: Seaside</a></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/OGOmpi0GgwOwH2y28QgkuA__thumb/img/jnSHqOXWLN3PfdpCtnfjf44oTsA=/fit-in/200x150/filters:strip_icc()/pic460011.jpg"></td>
       <td><a href="https://boardgamegeek.com/boardgame/40834">Dominion: Intrigue</a></td>
       <td>0</td>
       <td>113</td>
@@ -466,10 +454,635 @@
       <td>2</td>
       <td>6</td>
       <td>30</td>
-      <td>[]</td>
+      <td></td>
       <td>Krizszs</td>
     </tr>
     <tr>
+      <td><img src="https://cf.geekdo-images.com/Nqw3SzV4JDd64lcDgytPEg__thumb/img/SYowoPc4NsBcU6duKGUM93itzZY=/fit-in/200x150/filters:strip_icc()/pic7227691.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/370591">Dorfromantik: The Board Game</a></td>
+      <td>2</td>
+      <td>425</td>
+      <td>7.6</td>
+      <td>1.7</td>
+      <td>1</td>
+      <td>6</td>
+      <td>60</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/LvBG5jXW8ZFyllrbyJme-A__thumb/img/rmPTY8XdFru_9M_Ty68j4LpK10A=/fit-in/200x150/filters:strip_icc()/pic3683059.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/232219">Dragon Castle</a></td>
+      <td>1</td>
+      <td>795</td>
+      <td>7.1</td>
+      <td>2.0</td>
+      <td>1</td>
+      <td>4</td>
+      <td>45</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/CwlOEAEzD-O09vdbvyD2Gw__thumb/img/MlBFEI8Stn8fmmHhF9Wgym9PHVU=/fit-in/200x150/filters:strip_icc()/pic7988716.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/244916">Drop It</a></td>
+      <td>7</td>
+      <td>1710</td>
+      <td>6.9</td>
+      <td>1.1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>30</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/m6269wyfWVa7gZp3oXKx6A__thumb/img/WPqYsCIpVURoB_rdqRLgZptWNV8=/fit-in/200x150/filters:strip_icc()/pic3328521.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/113294">Escape: The Curse of the Temple</a></td>
+      <td>0</td>
+      <td>742</td>
+      <td>7.0</td>
+      <td>1.5</td>
+      <td>1</td>
+      <td>5</td>
+      <td>10</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/iRkRCqB6-J428N8JPjL5fg__thumb/img/kR9xjgvm2GkSGpSuyngRuUuHwTg=/fit-in/200x150/filters:strip_icc()/pic1727008.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/138161">Firefly: The Game</a></td>
+      <td>5</td>
+      <td>467</td>
+      <td>7.4</td>
+      <td>3.0</td>
+      <td>1</td>
+      <td>4</td>
+      <td>240</td>
+      <td><a href="https://boardgamegeek.com/boardgame/145481">Firefly: The Game – Artful Dodger</a> | <a href="https://boardgamegeek.com/boardgame/147736">Firefly: The Game – Breakin' Atmo</a> | <a href="https://boardgamegeek.com/boardgame/179014">Firefly: The Game – Kalidasa</a> | <a href="https://boardgamegeek.com/boardgame/151953">Firefly: The Game – Pirates & Bounty Hunters</a></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/1gQABuftAVgk1qshkMyDEw__thumb/img/Ovni6sWuvyfj9LWn-hnHzpCELF8=/fit-in/200x150/filters:strip_icc()/pic6125184.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/336794">Galaxy Trucker (Second Edition)</a></td>
+      <td>2</td>
+      <td>623</td>
+      <td>7.5</td>
+      <td>2.3</td>
+      <td>2</td>
+      <td>4</td>
+      <td>30</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/km1bBsWSyml95EFxcx5JWw__thumb/img/O_LMwf86Ybtc-ThsPXMPJ0kDfkA=/fit-in/200x150/filters:strip_icc()/pic8104136.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/30539">Get Bit!</a></td>
+      <td>1</td>
+      <td>3131</td>
+      <td>6.1</td>
+      <td>1.1</td>
+      <td>2</td>
+      <td>7</td>
+      <td>20</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/xiJmbkTIlaBidfWsewdrdg__thumb/img/bQ-kfXi7Zw3_XSSVMv50-zDgHY4=/fit-in/200x150/filters:strip_icc()/pic431734.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/59">Giganten</a></td>
+      <td>0</td>
+      <td>3021</td>
+      <td>6.7</td>
+      <td>2.6</td>
+      <td>3</td>
+      <td>4</td>
+      <td>90</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/R4aQbIo0KZ6npxfhUc7ZYw__thumb/img/fnJz2hI7VjmEKxXUrztqU4XNlms=/fit-in/200x150/filters:strip_icc()/pic6958739.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/318243">HITSTER</a></td>
+      <td>13</td>
+      <td>885</td>
+      <td>7.7</td>
+      <td>1.0</td>
+      <td>2</td>
+      <td>10</td>
+      <td>30</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/JDVksMwfcqoem1k_xtZrOA__thumb/img/amCeCcEKhYGbVtDvpvIMnu3qTg0=/fit-in/200x150/filters:strip_icc()/pic2007286.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/98778">Hanabi</a></td>
+      <td>4</td>
+      <td>540</td>
+      <td>7.0</td>
+      <td>1.7</td>
+      <td>2</td>
+      <td>5</td>
+      <td>25</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/8szZtgj97oM3rVAXKVATKA__thumb/img/iAvgv3NdgSPag2wTNqGgVjqlyAg=/fit-in/200x150/filters:strip_icc()/pic6011419.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/324157">Hidden Games Crime Scene: Green Poison</a></td>
+      <td>0</td>
+      <td>4959</td>
+      <td>8.1</td>
+      <td>2.2</td>
+      <td>1</td>
+      <td>6</td>
+      <td>180</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/NFN-oNosuQqhPc-FYv4PAw__thumb/img/wOMEgraiCyJuDoJvp9ChSc5R4_g=/fit-in/200x150/filters:strip_icc()/pic6163740.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/304847">Hidden Games Crime Scene: The New Haven Case</a></td>
+      <td>0</td>
+      <td>2518</td>
+      <td>8.1</td>
+      <td>2.4</td>
+      <td>1</td>
+      <td>6</td>
+      <td>180</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/qxB2LU0536eKeByvNl3vcA__thumb/img/u-Mm0YOkr4MkmQqHLkh0uHTxHDI=/fit-in/200x150/filters:strip_icc()/pic8229329.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/154597">Hive Pocket</a></td>
+      <td>2</td>
+      <td>999999</td>
+      <td>7.7</td>
+      <td>2.2</td>
+      <td>2</td>
+      <td>2</td>
+      <td>20</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/qKcKjHpzAvLddwBhyindag__thumb/img/HhZu2qLp9wyX9PNgvmDE8_hCl-0=/fit-in/200x150/filters:strip_icc()/pic4268499.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/254640">Just One</a></td>
+      <td>9</td>
+      <td>147</td>
+      <td>7.6</td>
+      <td>1.0</td>
+      <td>3</td>
+      <td>7</td>
+      <td>60</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/m_RzXpHURC0_xLkvRSR_sw__thumb/img/OfgWmkGJj5BgOO0zFHEtP5CHfbU=/fit-in/200x150/filters:strip_icc()/pic3043734.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/70323">King of Tokyo</a></td>
+      <td>12</td>
+      <td>435</td>
+      <td>7.1</td>
+      <td>1.5</td>
+      <td>2</td>
+      <td>6</td>
+      <td>30</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/kE0C-vBrqQ1w4j_P2sqb8g__thumb/img/nUNoUx9kAKDTjuF-6BoA45t-knE=/fit-in/200x150/filters:strip_icc()/pic4906385.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/287938">Kitchen Rush (Revised Edition)</a></td>
+      <td>0</td>
+      <td>1426</td>
+      <td>7.5</td>
+      <td>2.1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>60</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/AL5D-dXabY-Lk3PqIFk_0g__thumb/img/Q-76aN92M3OveMp26t7b0i7V-i4=/fit-in/200x150/filters:strip_icc()/pic4597095.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/50">Lost Cities</a></td>
+      <td>1</td>
+      <td>331</td>
+      <td>7.2</td>
+      <td>1.5</td>
+      <td>2</td>
+      <td>2</td>
+      <td>30</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/T1ltXwapFUtghS9A7_tf4g__thumb/img/GtNX7gCmGpw39Tr6JApWC3Aga5U=/fit-in/200x150/filters:strip_icc()/pic1401448.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/129622">Love Letter</a></td>
+      <td>9</td>
+      <td>348</td>
+      <td>7.2</td>
+      <td>1.2</td>
+      <td>2</td>
+      <td>4</td>
+      <td>20</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/klYGMliTYyE56nwjfQFSyA__thumb/img/Fwcv0x8G2oF9itDoRszU0K4Cc4k=/fit-in/200x150/filters:strip_icc()/pic2491956.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/175307">Love Letter: Adventure Time</a></td>
+      <td>17</td>
+      <td>1829</td>
+      <td>7.3</td>
+      <td>1.1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>20</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/iRDSJ4wnIjbcZnYYmxrS7w__thumb/img/a3lM0zDNSGhWG-Q_7h5sMk24xCU=/fit-in/200x150/filters:strip_icc()/pic3485528.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/198740">Lovecraft Letter</a></td>
+      <td>6</td>
+      <td>918</td>
+      <td>7.2</td>
+      <td>1.4</td>
+      <td>2</td>
+      <td>6</td>
+      <td>15</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/J-ts3MW0UhDzs621TR6cog__thumb/img/8hVkpMC5pDLr6ARI_4gI4N3aF5M=/fit-in/200x150/filters:strip_icc()/pic1871016.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/1927">Munchkin</a></td>
+      <td>0</td>
+      <td>5969</td>
+      <td>5.9</td>
+      <td>1.8</td>
+      <td>3</td>
+      <td>6</td>
+      <td>120</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/wfeAiLK5n5hD1omhnlYLLA__thumb/img/NAl-NrSAmWvklSVr3hKrSwiszNA=/fit-in/200x150/filters:strip_icc()/pic2601683.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/181304">Mysterium</a></td>
+      <td>4</td>
+      <td>399</td>
+      <td>7.2</td>
+      <td>1.9</td>
+      <td>2</td>
+      <td>7</td>
+      <td>42</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/k8OZeKYMN2vVSVCl5FD-UA__thumb/img/lRMeiFcB9C3ivyZlCoPRQe5xKNU=/fit-in/200x150/filters:strip_icc()/pic5382418.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/284435">Nova Luna</a></td>
+      <td>5</td>
+      <td>584</td>
+      <td>7.3</td>
+      <td>1.9</td>
+      <td>1</td>
+      <td>4</td>
+      <td>60</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/mF2cSNRk2O6HtE45Sl9TcA__thumb/img/K2AgL-KE_CTcvwahWd7zlt9YR0U=/fit-in/200x150/filters:strip_icc()/pic4852372.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/266524">PARKS</a></td>
+      <td>1</td>
+      <td>146</td>
+      <td>7.7</td>
+      <td>2.1</td>
+      <td>1</td>
+      <td>5</td>
+      <td>60</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/S3ybV1LAp-8SnHIXLLjVqA__thumb/img/oqViRj6nVxK3m36NluTxU1PZkrk=/fit-in/200x150/filters:strip_icc()/pic1534148.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/30549">Pandemic</a></td>
+      <td>2</td>
+      <td>151</td>
+      <td>7.5</td>
+      <td>2.4</td>
+      <td>2</td>
+      <td>4</td>
+      <td>45</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/wLW7pFn0--20lEizEz5p3A__thumb/img/P49TUiytgjmRAtKsfO7Y3yU_xic=/fit-in/200x150/filters:strip_icc()/pic2270442.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/163412">Patchwork</a></td>
+      <td>6</td>
+      <td>127</td>
+      <td>7.6</td>
+      <td>1.6</td>
+      <td>2</td>
+      <td>2</td>
+      <td>30</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/HhkYuVxMy-XrRCBWmZ78Eg__thumb/img/eVdvmMALg8vjPr6eDoj-mqvDbUc=/fit-in/200x150/filters:strip_icc()/pic3364832.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/218603">Photosynthesis</a></td>
+      <td>2</td>
+      <td>702</td>
+      <td>7.0</td>
+      <td>2.3</td>
+      <td>2</td>
+      <td>4</td>
+      <td>60</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/3HkjDovk8Yr2wMumcSUGog__thumb/img/4pF1oDpvn1VR3rbvW88xLK86xmA=/fit-in/200x150/filters:strip_icc()/pic4843622.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/258779">Planet Unknown</a></td>
+      <td>1</td>
+      <td>192</td>
+      <td>7.8</td>
+      <td>2.2</td>
+      <td>1</td>
+      <td>6</td>
+      <td>80</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/nhoyoLpYPC2b3UiJ5kJ0yg__thumb/img/KVmexHT6N_fquB1CQl9QRNYCvD0=/fit-in/200x150/filters:strip_icc()/pic1473629.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/132531">Roll for the Galaxy</a></td>
+      <td>3</td>
+      <td>148</td>
+      <td>7.6</td>
+      <td>2.8</td>
+      <td>2</td>
+      <td>5</td>
+      <td>45</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/kwoUM1zarhXmFIc8pObDjQ__thumb/img/_n6r_xp17naDKQ3ZfnQk6msoWOM=/fit-in/200x150/filters:strip_icc()/pic4821527.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/283609">Rubik's Cage</a></td>
+      <td>8</td>
+      <td>17000</td>
+      <td>6.4</td>
+      <td>1.2</td>
+      <td>2</td>
+      <td>4</td>
+      <td>20</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/_BUXOVRDU9g_eRwgpR5ZZw__thumb/img/icamIZ4nP3HHH3vczZqTr1hQgKY=/fit-in/200x150/filters:strip_icc()/pic8160466.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/418059">SETI: Search for Extraterrestrial Intelligence</a></td>
+      <td>0</td>
+      <td>5090</td>
+      <td>8.2</td>
+      <td>3.9</td>
+      <td>1</td>
+      <td>4</td>
+      <td>160</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/2HQMz_qehqPHAsn12h-o4w__thumb/img/BZJsX4-a803QfAn9_uvfx2mj4vE=/fit-in/200x150/filters:strip_icc()/pic3989510.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/168215">Saboteur: The Duel</a></td>
+      <td>6</td>
+      <td>5389</td>
+      <td>6.0</td>
+      <td>1.3</td>
+      <td>1</td>
+      <td>2</td>
+      <td>30</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/mVmmntn2oQd0PfFrWBvwIQ__thumb/img/RUmuGCB40FQH0en0R2nrcsSO7DE=/fit-in/200x150/filters:strip_icc()/pic404651.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/320">Scrabble</a></td>
+      <td>3</td>
+      <td>2253</td>
+      <td>6.3</td>
+      <td>2.1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>90</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/ptDZ2tJ6dSNiONAx3HH8Tw__thumb/img/TKoDj4fKzLa_m45TCQeDGcBf63o=/fit-in/200x150/filters:strip_icc()/pic3514298.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/2511">Sherlock Holmes Consulting Detective: The Thames Murders & Other Cases</a></td>
+      <td>1</td>
+      <td>168</td>
+      <td>7.6</td>
+      <td>2.7</td>
+      <td>1</td>
+      <td>8</td>
+      <td>120</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/d1RGD6HdWfX6loyZU23DDw__thumb/img/1inAKM--jeX28TP2lvvP27HxeKs=/fit-in/200x150/filters:strip_icc()/pic3303204.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/196379">Shit Happens</a></td>
+      <td>2</td>
+      <td>26906</td>
+      <td>5.4</td>
+      <td>1.1</td>
+      <td>2</td>
+      <td>8</td>
+      <td>60</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/uXMeQzNenHb3zK7Hoa6b2w__thumb/img/WyPClajMWU9lV5BdCXiZnqdZgmU=/fit-in/200x150/filters:strip_icc()/pic7398904.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/373106">Sky Team</a></td>
+      <td>1</td>
+      <td>64</td>
+      <td>8.2</td>
+      <td>2.0</td>
+      <td>2</td>
+      <td>2</td>
+      <td>15</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/c1DOHkXD35OcqfPoxoSXlA__thumb/img/kdzBzdj4prsoztFNEFZ6eWv1RVI=/fit-in/200x150/filters:strip_icc()/pic1269874.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/122522">Smash Up</a></td>
+      <td>5</td>
+      <td>1171</td>
+      <td>6.7</td>
+      <td>2.1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>45</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/nrf1jXPvkRnxYpGLAg51Xg__thumb/img/PUG0o8a1BjrQfcem_Cj5Hb6oBcw=/fit-in/200x150/filters:strip_icc()/pic1497102.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/134726">Smash Up: Awesome Level 9000</a></td>
+      <td>0</td>
+      <td>785</td>
+      <td>7.2</td>
+      <td>2.1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>45</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/kyXDwTzDIWjtJZun_JCULA__thumb/img/Txs9XlbvYbsyBqxgggQT1BfzCDw=/fit-in/200x150/filters:strip_icc()/pic3406958.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/216199">Smash Up: Big in Japan</a></td>
+      <td>0</td>
+      <td>2623</td>
+      <td>7.5</td>
+      <td>2.4</td>
+      <td>2</td>
+      <td>2</td>
+      <td>45</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/N8lJsPNdB05bJZRKV7_noQ__thumb/img/Ed-dkHsd1QmUnp8S9Lb3UmTLovU=/fit-in/200x150/filters:strip_icc()/pic2496426.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/162559">Smash Up: Munchkin</a></td>
+      <td>1</td>
+      <td>3523</td>
+      <td>6.5</td>
+      <td>2.2</td>
+      <td>2</td>
+      <td>4</td>
+      <td>45</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/pX1mLe9BhZ3TXAX6wioYfQ__thumb/img/HyKgG0xgDceRZXvKrgiz3BsEo-0=/fit-in/200x150/filters:strip_icc()/pic1857661.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/151004">Smash Up: Science Fiction Double Feature</a></td>
+      <td>0</td>
+      <td>1039</td>
+      <td>7.3</td>
+      <td>2.3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>45</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/2f9uTicUSXkdPp2Yks6zFw__thumb/img/_mXR9Tlo0f-i80h6pfhDEOBgvpY=/fit-in/200x150/filters:strip_icc()/pic5885689.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/192291">Sushi Go Party!</a></td>
+      <td>2</td>
+      <td>265</td>
+      <td>7.4</td>
+      <td>1.3</td>
+      <td>2</td>
+      <td>8</td>
+      <td>20</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/wHg4fOf48cs1kw1PDOk1tQ__thumb/img/6l-jqYlfECK1SVSsUs7FXUheKzQ=/fit-in/200x150/filters:strip_icc()/pic3958793.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/118048">Targi</a></td>
+      <td>4</td>
+      <td>153</td>
+      <td>7.6</td>
+      <td>2.3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>60</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/u1EZSUC5n8k4g4OFPkn3ow__thumb/img/mOfaidSnvnq2gHEQuAsYTLyIQQQ=/fit-in/200x150/filters:strip_icc()/pic8014078.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/244522">That's Pretty Clever!</a></td>
+      <td>2</td>
+      <td>185</td>
+      <td>7.6</td>
+      <td>1.9</td>
+      <td>1</td>
+      <td>4</td>
+      <td>30</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/VrNrk7XVU1hN0j1ZFhjcjw__thumb/img/6XPO0XNGGw3V77NjWR0K7Y33fqc=/fit-in/200x150/filters:strip_icc()/pic4934938.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/271320">The Castles of Burgundy</a></td>
+      <td>0</td>
+      <td>999999</td>
+      <td>8.4</td>
+      <td>2.9</td>
+      <td>1</td>
+      <td>4</td>
+      <td>120</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/NPWdxDD5uLOBLBDdVgdLvA__thumb/img/7464PJPFWWPzsOUMvf8t860zct0=/fit-in/200x150/filters:strip_icc()/pic6034093.png"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/316412">The LOOP</a></td>
+      <td>2</td>
+      <td>502</td>
+      <td>7.7</td>
+      <td>2.8</td>
+      <td>1</td>
+      <td>4</td>
+      <td>60</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/cAPTkL2BR3snLO71dkH8rw__thumb/img/5lDn1W82rlLXtVG7nPIYR9Orn-4=/fit-in/200x150/filters:strip_icc()/pic2576459.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/41114">The Resistance</a></td>
+      <td>6</td>
+      <td>403</td>
+      <td>7.2</td>
+      <td>1.6</td>
+      <td>5</td>
+      <td>10</td>
+      <td>30</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/H-AU-nhjCbaxWlWj_O-eFw__thumb/img/K_cH8KNrKA2FdgvqtUMubNvoRQU=/fit-in/200x150/filters:strip_icc()/pic4873141.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/269207">The Taverns of Tiefenthal</a></td>
+      <td>4</td>
+      <td>248</td>
+      <td>7.6</td>
+      <td>2.7</td>
+      <td>2</td>
+      <td>4</td>
+      <td>60</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/ZWJg0dCdrWHxVnc0eFXK8w__thumb/img/a9rsFV6KR0aun8GobhRU16aU8Kc=/fit-in/200x150/filters:strip_icc()/pic38668.jpg"></td>
       <td><a href="https://boardgamegeek.com/boardgame/9209">Ticket to Ride</a></td>
       <td>5</td>
       <td>245</td>
@@ -478,8 +1091,112 @@
       <td>2</td>
       <td>5</td>
       <td>60</td>
-      <td>[]</td>
+      <td></td>
       <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/0K1AOciqlMVUWFPLTJSiww__thumb/img/RDvu2FvsYVVH8icp1VsilUlqUGI=/fit-in/200x150/filters:strip_icc()/pic66668.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/14996">Ticket to Ride: Europe</a></td>
+      <td>3</td>
+      <td>165</td>
+      <td>7.5</td>
+      <td>1.9</td>
+      <td>2</td>
+      <td>5</td>
+      <td>60</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/8IO6sl0jN5IylDDRAOK8GQ__thumb/img/FNNjUKGi6KOAxkithC8seFipxPo=/fit-in/200x150/filters:strip_icc()/pic8214042.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/271460">UNO Flip!</a></td>
+      <td>0</td>
+      <td>3994</td>
+      <td>6.3</td>
+      <td>1.2</td>
+      <td>2</td>
+      <td>10</td>
+      <td>30</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/5FBIAvZi3Sw8dvmfwwJTjg__thumb/img/5H-bOQSAtO8LaWI3i3_oG3CQHHg=/fit-in/200x150/filters:strip_icc()/pic2760568.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/104006">Village</a></td>
+      <td>6</td>
+      <td>224</td>
+      <td>7.5</td>
+      <td>3.1</td>
+      <td>2</td>
+      <td>4</td>
+      <td>90</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/iTBogxNFa3Ymh-6ST3srsw__thumb/img/5vZps-04NqSAuUC4e6-E9M96VxE=/fit-in/200x150/filters:strip_icc()/pic4768766.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/274364">Watergate</a></td>
+      <td>1</td>
+      <td>159</td>
+      <td>7.8</td>
+      <td>2.3</td>
+      <td>2</td>
+      <td>2</td>
+      <td>60</td>
+      <td></td>
+      <td>AtomikVoid</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/yLZJCVLlIx4c7eJEWUNJ7w__thumb/img/VNToqgS2-pOGU6MuvIkMPKn_y-s=/fit-in/200x150/filters:strip_icc()/pic4458123.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/266192">Wingspan</a></td>
+      <td>12</td>
+      <td>29</td>
+      <td>8.0</td>
+      <td>2.5</td>
+      <td>1</td>
+      <td>5</td>
+      <td>70</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/h1dRxq4lNMpuSUSGdgCmfA__thumb/img/hPsEFlgh0b_JhtQmsJQv3vmq814=/fit-in/200x150/filters:strip_icc()/pic7107431.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/366161">Wingspan Asia</a></td>
+      <td>1</td>
+      <td>100</td>
+      <td>8.3</td>
+      <td>2.7</td>
+      <td>1</td>
+      <td>2</td>
+      <td>70</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/ygVQlepjPxyg7IizSCM_Tw__thumb/img/1qmNhxNzPDSu_Am2rmIobVe9J1M=/fit-in/200x150/filters:strip_icc()/pic5948.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/1465">Wizard</a></td>
+      <td>27</td>
+      <td>851</td>
+      <td>7.0</td>
+      <td>1.7</td>
+      <td>3</td>
+      <td>6</td>
+      <td>45</td>
+      <td></td>
+      <td>Krizszs</td>
+    </tr>
+    <tr>
+      <td><img src="https://cf.geekdo-images.com/iPy584JMAJYrupqRdQp8gA__thumb/img/0qjQ2T0wXNZDVvMie54bEVmKeT8=/fit-in/200x150/filters:strip_icc()/pic4991962.jpg"></td>
+      <td><a href="https://boardgamegeek.com/boardgame/62871">Zombie Dice</a></td>
+      <td>9</td>
+      <td>2537</td>
+      <td>6.2</td>
+      <td>1.1</td>
+      <td>2</td>
+      <td>99</td>
+      <td>20</td>
+      <td></td>
+      <td>AtomikVoid</td>
     </tr>
   </tbody>
 </table>

@@ -41,9 +41,17 @@ def fetch_user_collection(username):
     }
 
     collection = fetch_with_retries(bgg.collection, username, wishlist=False)
+
     if collection is not None and len(collection) > 0:
-        user_collection_data['collection'] = collection
-        print(f"Collection for {username} fetched: {len(collection)} games")
+        owned_games = []
+
+        for game in collection:
+            # Ensure game object has 'owned' attribute
+            if hasattr(game, 'owned') and game.owned:
+                owned_games.append(game)
+
+        user_collection_data['collection'] = owned_games
+        print(f"Collection for {username} fetched: {len(owned_games)} owned games")
     else:
         user_collection_data['errors'].append(f"No collection found for {username}")
 
@@ -97,12 +105,10 @@ def process_collection(username, collection):
                     # Only append if the expansion is not already in the list
                     if expansion_link not in combined_collection[base_game_id]["expansions"]:
                         combined_collection[base_game_id]["expansions"].append(expansion_link)
-                        with print_lock:
-                            print(f"\nAdded expansion: {game_details.name} to base game: {base_game.name}")
-                            print(f"Creating link for: {game_details.name} with ID: {game_details.id}")
+
                     continue  # Skip processing this as a base game
 
-            bgg_rank = "-"
+            bgg_rank = 999999
             try:
                 # Extract BGG rank
                 for rank in game_details.stats.get("ranks", []):
@@ -114,11 +120,13 @@ def process_collection(username, collection):
 
                 # Create the base game link
                 game_link = f'<a href="https://boardgamegeek.com/boardgame/{game_details.id}">{game_details.name}</a>'
+                game_thumbnail = game_details.thumbnail if game_details.thumbnail else ''
 
                 # Check if the base game is already in the combined collection
                 if game_id not in combined_collection:
                     # Initialize the base game entry
                     combined_collection[game_id] = {
+                        "image": f'<img src="{game_thumbnail}">' if game_thumbnail else '',
                         "name": game_link,
                         "total_plays": game.numplays,
                         "bgg_rank": bgg_rank,
@@ -206,14 +214,23 @@ def main():
         print("Combined collection is empty. No games were processed.")
         return
 
+    # Format the expansion to remove brackets by joining them as a string
+    for game in combined_collection.values():
+        if isinstance(game["expansions"], list):
+            if game["expansions"]:  # If there are expansions, join them
+                game["expansions"] = ' | '.join(game["expansions"])
+            else:  # If no expansions, set the field to an empty string
+                game["expansions"] = ''
+
     # Sort the combined collection by game name
-    sorted_collection = sorted(combined_collection.values(), key=lambda x: x['name'])
+    sorted_collection = sorted(combined_collection.values(), key=lambda x: x['name'].split('>')[1].split('<')[0])
 
     # Create a DataFrame from the sorted collection
     df = pd.DataFrame(sorted_collection)
 
     # Rename columns to be more user-friendly
     df.rename(columns={
+        "image": "Image",
         "name": "Game Name",
         "total_plays": "Total Plays",
         "bgg_rank": "BGG Rank",
@@ -226,11 +243,14 @@ def main():
         "owners": "Owners"
     }, inplace=True)
 
+    # Create a string of valid usernames
+    username_string = ' | '.join([f'<a href="https://boardgamegeek.com/user/{username}" target="_blank">{username}</a>' for username in usernames])
+
     # Output the DataFrame to an HTML file with left-aligned text
     output_file = "combined_board_game_collection.html"
     html = df.to_html(index=False, escape=False)
 
-    # Adding custom styling for the table
+    # Adding custom dark mode styling for the table with right-aligned header image and orange links
     styled_html = f"""
         <html>
             <head>
@@ -241,8 +261,13 @@ def main():
                     $(document).ready(function() {{
                         $('#gameTable').DataTable({{
                             "order": [[0, "asc"]],
+                            "lengthMenu": [[10, 25, 50, 100, -1], ["10", "25", "50", "100", "ALL"]],
+                            "pageLength": 100,
+                            "language": {{
+                                "lengthMenu": "Show _MENU_ games"
+                            }},
                             "columnDefs": [{{
-                                "targets": [9], // Assuming 'Owners' is the last column (index 9)
+                                "targets": [10],
                                 "visible": true,
                                 "searchable": false
                             }}]
@@ -250,22 +275,73 @@ def main():
                     }});
                 </script>
                 <style>
+                    body {{
+                        background-color: #1e1e1e;
+                        color: #ffffff;
+                        font-family: Arial, sans-serif;
+                    }}
                     table {{
                         width: 100%;
                         border-collapse: collapse;
                         text-align: left;
+                        color: #ffffff;
                     }}
                     th, td {{
                         padding: 8px;
-                        border: 1px solid #ddd;
+                        border: 1px solid #444;
                     }}
                     th {{
-                        background-color: #f2f2f2;
+                        background-color: #333;
+                        color: #ff5100; /* Orange highlight */
+                    }}
+                    tr:nth-child(even) {{
+                        background-color: #2a2a2a;
+                    }}
+                    tr:nth-child(odd) {{
+                        background-color: #1e1e1e;
+                    }}
+                    td img {{
+                        display: block;
+                        margin: 0 auto;
+                        max-height: 200px;
+                        max-width: 200px;
+                    }}
+                    a {{
+                        color: #ff5100;
+                        text-decoration: none;
+                    }}
+                    a:hover {{
+                        text-decoration: underline;
+                    }}
+                    .header {{
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        background-color: #1e1e1e;
+                        padding: 10px;
+                    }}
+                    .header img {{
+                        height: 80px;
+                        margin-left: 20px;
+                    }}
+                    .header h2 {{
+                        color: #ff5100;
+                        font-size: 36px;
+                        margin: 0;
+                    }}
+                    .header h3 {{
+                        color: white;
                     }}
                 </style>
             </head>
             <body>
-                <h2>Headline</h2>
+                <div class="header">
+                    <h2>Combined BGG Collection</h2>
+                    <h3>{username_string}</h3>
+                    <a href="https://boardgamegeek.com/" target="_blank">
+                        <img src="https://cf.geekdo-images.com/HZy35cmzmmyV9BarSuk6ug__imagepagezoom/img/pXXf-xfYw0boHLfc3sL_g1nsLtY=/fit-in/1200x900/filters:no_upscale():strip_icc()/pic7779581.png" alt="Header Image">
+                    </a>                
+                </div>
                 {html.replace('<table', '<table id="gameTable"')}
             </body>
         </html>
