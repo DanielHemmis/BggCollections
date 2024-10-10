@@ -26,7 +26,7 @@ def fetch_with_retries(func, *args, max_retries=3, **kwargs):
             return func(*args, **kwargs)
         except Exception as e:
             if attempt < max_retries - 1:
-                print(f"Error fetching data, retrying... ({attempt + 1}/{max_retries})")
+                print(f"Error fetching data for {args}, retrying ({attempt + 1}/{max_retries})")
                 time.sleep(1)  # Wait before retrying
             else:
                 print(f"Failed to retrieve data after {max_retries} retries: {e}")
@@ -41,9 +41,9 @@ def fetch_user_collection(username):
     }
 
     collection = fetch_with_retries(bgg.collection, username, wishlist=False)
-    if collection is not None:
+    if collection is not None and len(collection) > 0:
         user_collection_data['collection'] = collection
-        print(f"Collection for {username} fetched")
+        print(f"Collection for {username} fetched: {len(collection)} games")
     else:
         user_collection_data['errors'].append(f"No collection found for {username}")
 
@@ -57,8 +57,8 @@ def process_collection(username, collection):
     games_fetched = 0  # Track number of games fetched
 
     # Collect game IDs for batch fetching
-    game_ids = [str(game.id) for game in collection]  # Ensure game IDs are strings
-    print(f"Fetching game details for {username} - Total games: {total_games}")
+    game_ids = [str(game.id) for game in collection]
+    print(f"Fetching game details for {username}")
 
     # Fetch details for game IDs in chunks
     game_details_list = []
@@ -73,7 +73,7 @@ def process_collection(username, collection):
 
                 # Update the progress message in a thread-safe way
                 with print_lock:
-                    progress_message = f"Fetching {username}: {games_fetched} / {total_games} games fetched."
+                    progress_message = f"Fetching {username}: {games_fetched} / {total_games} games fetched"
                     print(f"\r{progress_message}", end='', flush=True)  # Update this user's progress
 
         except Exception as e:
@@ -86,8 +86,6 @@ def process_collection(username, collection):
         game_details = next((g for g in game_details_list if g.id == game_id), None)
 
         if game_details:
-            print(f"\nProcessing game: {game_details.name} (ID: {game_details.id})")  # Debug output
-
             # Check if the game is an expansion of another game
             if game_details._expands:
                 base_game = game_details._expands[0]  # Assuming it expands one base game
@@ -95,20 +93,14 @@ def process_collection(username, collection):
 
                 if base_game_id in combined_collection:
                     # Add this expansion to the base game's entry immediately
-                    combined_collection[base_game_id]["expansions"].append(game_details.name)
-                    with print_lock:
-                        print(f"\nAdded expansion: {game_details.name} to base game: {base_game.name}")
-                else:
-                    # Store the expansion to attach later if/when the base game is added
-                    if base_game_id not in expansions_to_attach:
-                        expansions_to_attach[base_game_id] = []
-                    expansions_to_attach[base_game_id].append(game_details.name)
-                    with print_lock:
-                        print(f"\nStored expansion: {game_details.name} to attach to base game: {base_game.name}")
-                continue  # Skip processing this as a base game
-
-            # Process it as a base game
-            print(f"\nAdding Base game: {game_details.name}")  # Debug output
+                    expansion_link = f'<a href="https://boardgamegeek.com/boardgame/{game_details.id}">{game_details.name}</a>'
+                    # Only append if the expansion is not already in the list
+                    if expansion_link not in combined_collection[base_game_id]["expansions"]:
+                        combined_collection[base_game_id]["expansions"].append(expansion_link)
+                        with print_lock:
+                            print(f"\nAdded expansion: {game_details.name} to base game: {base_game.name}")
+                            print(f"Creating link for: {game_details.name} with ID: {game_details.id}")
+                    continue  # Skip processing this as a base game
 
             bgg_rank = "-"
             try:
@@ -120,11 +112,14 @@ def process_collection(username, collection):
                             bgg_rank = str(int(float(rank_value)))  # Convert to string after removing decimals
                         break
 
+                # Create the base game link
+                game_link = f'<a href="https://boardgamegeek.com/boardgame/{game_details.id}">{game_details.name}</a>'
+
                 # Check if the base game is already in the combined collection
                 if game_id not in combined_collection:
                     # Initialize the base game entry
                     combined_collection[game_id] = {
-                        "name": game.name,
+                        "name": game_link,
                         "total_plays": game.numplays,
                         "bgg_rank": bgg_rank,
                         "rating": round(game_details.rating_average, 1) if game_details.rating_average is not None else "-",
@@ -132,18 +127,15 @@ def process_collection(username, collection):
                         "min_players": game_details.min_players,
                         "max_players": game_details.max_players,
                         "playtime": game_details.playing_time,
-                        "owners": username,
-                        "expansions": []  # Initialize expansions list
+                        "expansions": [],
+                        "owners": username
                     }
-
-                    with print_lock:
-                        print(f"\nAdded base game: {game.name} to combined collection.")  # Debug message
 
                     # Attach any previously stored expansions for this base game
                     if game_id in expansions_to_attach:
                         combined_collection[game_id]["expansions"].extend(expansions_to_attach[game_id])
                         with print_lock:
-                            print(f"\nAttached expansions: {expansions_to_attach[game_id]} to base game: {game.name}")
+                            print(f"\nAttached expansions: {expansions_to_attach[game_id]} to base game: {game_details.name}")
                         del expansions_to_attach[game_id]  # Remove after attaching
 
                 else:
@@ -151,13 +143,9 @@ def process_collection(username, collection):
                     combined_collection[game_id]["owners"] += f", {username}"  # Append to the existing string
                     combined_collection[game_id]["total_plays"] += game.numplays
 
-                # Debug message for successfully processed game
-                with print_lock:
-                    print(f"\nProcessed game: {game.name} - ID: {game_id}")
-
             except Exception as e:
                 with print_lock:
-                    print(f"\nError processing game details for {game.name}: {e}")
+                    print(f"\nError processing game details for {game_details.name}: {e}")
 
         else:
             with print_lock:
@@ -168,7 +156,7 @@ def process_collection(username, collection):
         if not combined_collection:
             print(f"\nCombined collection is empty after processing {username}.")
         else:
-            print(f"\nCombined collection after processing {username}: {len(combined_collection)} games added.")
+            print(f"\nCombined collection after processing {username}: {len(combined_collection)}")
 
 
 # Function to chunk the game IDs
@@ -180,23 +168,30 @@ def chunk_list(lst, chunk_size):
 # Main function to fetch and process user collections using threads
 def main():
     user_collections = []
+    valid_usernames = []  # List to store usernames with valid collections
     total_games = 0  # Total number of games across all users
 
-    print("Fetching collections for users:")
+    print(f"Fetching collections for users: {usernames}")
 
     # Fetch collections for each user
     for username in usernames:
         user_data = fetch_user_collection(username)
         if user_data['collection']:
             user_collections.append(user_data['collection'])
+            valid_usernames.append(username)  # Add valid username
             total_games += len(user_data['collection'])  # Accumulate the total games for all users
         else:
             print(f"Collection for {username} not found.")
 
+    # Only process if there are valid user collections
+    if not valid_usernames:
+        print("No valid user collections found. Exiting.")
+        return
+
     # Now process each user's collection
     with ThreadPoolExecutor() as executor:
         futures = {executor.submit(process_collection, username, collection): username for username, collection in
-                   zip(usernames, user_collections)}
+                   zip(valid_usernames, user_collections)}
 
         for future in as_completed(futures):
             username = futures[future]
@@ -227,6 +222,7 @@ def main():
         "min_players": "Min Players",
         "max_players": "Max Players",
         "playtime": "Playtime (min)",
+        "expansions": "Expansions",
         "owners": "Owners"
     }, inplace=True)
 
@@ -246,7 +242,7 @@ def main():
                         $('#gameTable').DataTable({{
                             "order": [[0, "asc"]],
                             "columnDefs": [{{
-                                "targets": [8], // Assuming 'Owners' is the last column (index 8)
+                                "targets": [9], // Assuming 'Owners' is the last column (index 9)
                                 "visible": true,
                                 "searchable": false
                             }}]
@@ -269,7 +265,7 @@ def main():
                 </style>
             </head>
             <body>
-                <h2>Combined Board Game Collection</h2>
+                <h2>Headline</h2>
                 {html.replace('<table', '<table id="gameTable"')}
             </body>
         </html>
