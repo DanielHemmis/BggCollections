@@ -43,7 +43,7 @@ def fetch_user_collection(username):
     collection = fetch_with_retries(bgg.collection, username, wishlist=False)
     if collection is not None:
         user_collection_data['collection'] = collection
-        print(f"Collection for {username} fetched: {len(collection)} games")
+        print(f"Collection for {username} fetched")
     else:
         user_collection_data['errors'].append(f"No collection found for {username}")
 
@@ -52,6 +52,7 @@ def fetch_user_collection(username):
 
 def process_collection(username, collection):
     global combined_collection
+    expansions_to_attach = {}  # Temporary storage for expansions waiting for base games
     total_games = len(collection)  # Track total games for this user
     games_fetched = 0  # Track number of games fetched
 
@@ -61,7 +62,6 @@ def process_collection(username, collection):
 
     # Fetch details for game IDs in chunks
     game_details_list = []
-
     for game_id_chunk in chunk_list(game_ids, 20):
         try:
             chunk_details = bgg.game_list(game_id_chunk)  # Fetch game details for the current chunk
@@ -83,19 +83,32 @@ def process_collection(username, collection):
     # Process each game in the collection
     for game in collection:
         game_id = game.id
-        # Find game details for the current game ID
         game_details = next((g for g in game_details_list if g.id == game_id), None)
 
         if game_details:
             print(f"\nProcessing game: {game_details.name} (ID: {game_details.id})")  # Debug output
 
-            if game_details.expansion:
-                print(f"\nSkipping expansion: {game_details.name}")  # Debug output
-                continue  # Skip expansions
-            else:
-                print(f"\nAdding Base game: {game_details.name}")  # Debug output
+            # Check if the game is an expansion of another game
+            if game_details._expands:
+                base_game = game_details._expands[0]  # Assuming it expands one base game
+                base_game_id = base_game.id
 
-            print(combined_collection)
+                if base_game_id in combined_collection:
+                    # Add this expansion to the base game's entry immediately
+                    combined_collection[base_game_id]["expansions"].append(game_details.name)
+                    with print_lock:
+                        print(f"\nAdded expansion: {game_details.name} to base game: {base_game.name}")
+                else:
+                    # Store the expansion to attach later if/when the base game is added
+                    if base_game_id not in expansions_to_attach:
+                        expansions_to_attach[base_game_id] = []
+                    expansions_to_attach[base_game_id].append(game_details.name)
+                    with print_lock:
+                        print(f"\nStored expansion: {game_details.name} to attach to base game: {base_game.name}")
+                continue  # Skip processing this as a base game
+
+            # Process it as a base game
+            print(f"\nAdding Base game: {game_details.name}")  # Debug output
 
             bgg_rank = "-"
             try:
@@ -107,23 +120,32 @@ def process_collection(username, collection):
                             bgg_rank = str(int(float(rank_value)))  # Convert to string after removing decimals
                         break
 
-                # Check if game is already in the combined collection
+                # Check if the base game is already in the combined collection
                 if game_id not in combined_collection:
-                    # Initialize the game entry
+                    # Initialize the base game entry
                     combined_collection[game_id] = {
                         "name": game.name,
                         "total_plays": game.numplays,
                         "bgg_rank": bgg_rank,
                         "rating": round(game_details.rating_average, 1) if game_details.rating_average is not None else "-",
-                        "weight": round(game_details.stats.get("averageweight", 0), 1) if game_details.stats.get("averageweight") is not None else "-",
+                        "weight": round(game_details.stats.get("averageweight", 1), 1) if game_details.stats.get("averageweight") is not None else "-",
                         "min_players": game_details.min_players,
                         "max_players": game_details.max_players,
                         "playtime": game_details.playing_time,
                         "owners": username,
                         "expansions": []  # Initialize expansions list
                     }
+
                     with print_lock:
                         print(f"\nAdded base game: {game.name} to combined collection.")  # Debug message
+
+                    # Attach any previously stored expansions for this base game
+                    if game_id in expansions_to_attach:
+                        combined_collection[game_id]["expansions"].extend(expansions_to_attach[game_id])
+                        with print_lock:
+                            print(f"\nAttached expansions: {expansions_to_attach[game_id]} to base game: {game.name}")
+                        del expansions_to_attach[game_id]  # Remove after attaching
+
                 else:
                     # If game is already there, append the current username to the Owners string
                     combined_collection[game_id]["owners"] += f", {username}"  # Append to the existing string
@@ -160,7 +182,7 @@ def main():
     user_collections = []
     total_games = 0  # Total number of games across all users
 
-    print("Fetching collections for users...")
+    print("Fetching collections for users:")
 
     # Fetch collections for each user
     for username in usernames:
@@ -188,8 +210,6 @@ def main():
     if not combined_collection:
         print("Combined collection is empty. No games were processed.")
         return
-    else:
-        print(f"Total games processed: {len(combined_collection)}")
 
     # Sort the combined collection by game name
     sorted_collection = sorted(combined_collection.values(), key=lambda x: x['name'])
