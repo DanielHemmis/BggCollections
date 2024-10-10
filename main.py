@@ -1,13 +1,11 @@
-from boardgamegeek import BGGClient
+import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 import webbrowser
 import os
 from threading import Lock
 import time
-
-# Initialize the BGG client
-bgg = BGGClient()
+import xml.etree.ElementTree as ET
 
 # List of BGG usernames to fetch collections for
 usernames = ["AtomikVoid", "Krizszs"]
@@ -17,6 +15,24 @@ combined_collection = {}
 
 # Lock for thread-safe printing
 print_lock = Lock()
+
+
+# Function to fetch data from BGG XML API
+def fetch_from_bgg(endpoint, params=None):
+    base_url = "https://boardgamegeek.com/xmlapi2/"
+    print(f"Fetching from URL: {base_url + endpoint} with params: {params}")  # Debug URL and parameters
+    response = requests.get(base_url + endpoint, params=params)
+
+    try:
+        response.raise_for_status()  # Raise an error for bad responses
+        print(f"Successfully fetched data from {base_url + endpoint}")  # Successful fetch
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP error occurred: {e} - Response content: {response.content}")  # Log HTTP errors
+        raise
+    except Exception as e:
+        print(f"An error occurred: {e}")  # Log general errors
+
+    return response.content  # Return the raw content for further inspection
 
 
 # Function to retry fetching collections
@@ -40,10 +56,28 @@ def fetch_user_collection(username):
         'errors': []
     }
 
-    collection = fetch_with_retries(bgg.collection, username, wishlist=False)
-    if collection is not None and len(collection) > 0:
-        user_collection_data['collection'] = collection
-        print(f"Collection for {username} fetched: {len(collection)} games")
+    # Fetch the collection XML data
+    collection_xml = fetch_with_retries(fetch_from_bgg, 'collection', {'username': username, 'wishlist': '0'})
+
+    # Parse the collection XML
+    if collection_xml is not None:
+        try:
+            # Print the raw XML response for debugging
+            print(f"Raw XML response for {username}:\n{collection_xml.decode('utf-8')}")  # Decode bytes to string
+
+            # Parse the XML
+            root = ET.fromstring(collection_xml)
+            for item in root.findall('item'):
+                game_id = item.get('objectid')
+                user_collection_data['collection'].append(game_id)
+
+            print(f"Collection for {username} fetched: {len(user_collection_data['collection'])} games")
+        except ET.ParseError as e:
+            user_collection_data['errors'].append(f"XML parse error for {username}: {e}")
+            print(f"Failed to parse XML for {username}: {e}")
+        except Exception as e:
+            user_collection_data['errors'].append(f"Error processing collection for {username}: {e}")
+            print(f"Error processing collection for {username}: {e}")
     else:
         user_collection_data['errors'].append(f"No collection found for {username}")
 
@@ -56,20 +90,18 @@ def process_collection(username, collection):
     total_games = len(collection)  # Track total games for this user
     games_fetched = 0  # Track number of games fetched
 
-    # Collect game IDs for batch fetching
-    game_ids = [str(game.id) for game in collection]
-    print(f"Fetching game details for {username}")
-
     # Fetch details for game IDs in chunks
     game_details_list = []
-    for game_id_chunk in chunk_list(game_ids, 20):
+    for game_id_chunk in chunk_list(collection, 20):  # Process in chunks of 20
         try:
-            chunk_details = bgg.game_list(game_id_chunk)  # Fetch game details for the current chunk
-            game_details_list.extend(chunk_details)  # Extend the list with results
+            print(f"Fetching details for chunk: {game_id_chunk}")  # Debug chunk being fetched
+            game_details_xml = fetch_with_retries(fetch_from_bgg, 'thing', {'id': ",".join(game_id_chunk)})
+            for game in game_details_xml.findall('item'):
+                game_id = game.get('id')
+                game_details_list.append(game)
 
-            # Update game count after fetching each game in the chunk
-            for game in chunk_details:
-                games_fetched += 1  # Increment the fetched game count
+                # Update game count after fetching each game in the chunk
+                games_fetched += 1
 
                 # Update the progress message in a thread-safe way
                 with print_lock:
@@ -81,71 +113,63 @@ def process_collection(username, collection):
                 print(f"\nFailed to fetch game details for chunk: {e}")
 
     # Process each game in the collection
-    for game in collection:
-        game_id = game.id
-        game_details = next((g for g in game_details_list if g.id == game_id), None)
+    for game_id in collection:
+        game_details = next((g for g in game_details_list if g.get('id') == game_id), None)
 
         if game_details:
             # Check if the game is an expansion of another game
-            if game_details._expands:
-                base_game = game_details._expands[0]  # Assuming it expands one base game
-                base_game_id = base_game.id
-
+            expands = game_details.find('expands')
+            if expands is not None:
+                base_game_id = expands.get('id')
                 if base_game_id in combined_collection:
                     # Add this expansion to the base game's entry immediately
-                    expansion_link = f'<a href="https://boardgamegeek.com/boardgame/{game_details.id}">{game_details.name}</a>'
+                    expansion_link = f'<a href="https://boardgamegeek.com/boardgame/{game_details.get("id")}">{game_details.find("name").text}</a>'
                     # Only append if the expansion is not already in the list
                     if expansion_link not in combined_collection[base_game_id]["expansions"]:
                         combined_collection[base_game_id]["expansions"].append(expansion_link)
                         with print_lock:
-                            print(f"\nAdded expansion: {game_details.name} to base game: {base_game.name}")
-                            print(f"Creating link for: {game_details.name} with ID: {game_details.id}")
+                            print(f"\nAdded expansion: {game_details.find('name').text} to base game: {base_game_id}")
                     continue  # Skip processing this as a base game
 
             bgg_rank = "-"
             try:
                 # Extract BGG rank
-                for rank in game_details.stats.get("ranks", []):
-                    if rank.get("name") == "boardgame":
-                        rank_value = rank.get("value")
-                        if rank_value not in (None, "N/A"):
-                            bgg_rank = str(int(float(rank_value)))  # Convert to string after removing decimals
-                        break
+                ranks = game_details.find('statistics/ranks')
+                if ranks is not None:
+                    for rank in ranks.findall('rank'):
+                        if rank.get('name') == "boardgame":
+                            rank_value = rank.get('value')
+                            if rank_value not in (None, "N/A"):
+                                bgg_rank = str(int(float(rank_value)))  # Convert to string after removing decimals
+                            break
 
                 # Create the base game link
-                game_link = f'<a href="https://boardgamegeek.com/boardgame/{game_details.id}">{game_details.name}</a>'
+                game_link = f'<a href="https://boardgamegeek.com/boardgame/{game_details.get("id")}">{game_details.find("name").text}</a>'
 
                 # Check if the base game is already in the combined collection
                 if game_id not in combined_collection:
                     # Initialize the base game entry
                     combined_collection[game_id] = {
                         "name": game_link,
-                        "total_plays": game.numplays,
+                        "total_plays": 0,  # Placeholder for plays
                         "bgg_rank": bgg_rank,
-                        "rating": round(game_details.rating_average, 1) if game_details.rating_average is not None else "-",
-                        "weight": round(game_details.stats.get("averageweight", 1), 1) if game_details.stats.get("averageweight") is not None else "-",
-                        "min_players": game_details.min_players,
-                        "max_players": game_details.max_players,
-                        "playtime": game_details.playing_time,
+                        "rating": round(float(game_details.find("rating/average").text), 1) if game_details.find(
+                            "rating/average") is not None else "-",
+                        "weight": round(float(game_details.find("statistics/averageweight").text),
+                                        1) if game_details.find("statistics/averageweight") is not None else "-",
+                        "min_players": int(game_details.find("minplayers").text),
+                        "max_players": int(game_details.find("maxplayers").text),
+                        "playtime": int(game_details.find("playingtime").text),
                         "expansions": [],
                         "owners": username
                     }
 
-                    # Attach any previously stored expansions for this base game
-                    if game_id in expansions_to_attach:
-                        combined_collection[game_id]["expansions"].extend(expansions_to_attach[game_id])
-                        with print_lock:
-                            print(f"\nAttached expansions: {expansions_to_attach[game_id]} to base game: {game_details.name}")
-                        del expansions_to_attach[game_id]  # Remove after attaching
-
-                else:
-                    # If game is already there, append the current username to the Owners string
-                    combined_collection[game_id]["owners"] += f", {username}"  # Append to the existing string
-                    combined_collection[game_id]["total_plays"] += game.numplays
+                with print_lock:
+                    print(f"\nProcessed game: {game_details.find('name').text} (ID: {game_id})")
 
             except Exception as e:
                 with print_lock:
-                    print(f"\nError processing game details for {game_details.name}: {e}")
+                    print(f"\nError processing game details for {game_details.find('name').text}: {e}")
 
         else:
             with print_lock:
@@ -182,24 +206,27 @@ def main():
             total_games += len(user_data['collection'])  # Accumulate the total games for all users
         else:
             print(f"Collection for {username} not found.")
+            if user_data['errors']:
+                for error in user_data['errors']:
+                    print(f"Error: {error}")
 
     # Only process if there are valid user collections
     if not valid_usernames:
         print("No valid user collections found. Exiting.")
         return
 
-    # Now process each user's collection
+    # Use threading to fetch game details concurrently
     with ThreadPoolExecutor() as executor:
-        futures = {executor.submit(process_collection, username, collection): username for username, collection in
-                   zip(valid_usernames, user_collections)}
+        futures = {executor.submit(process_collection, username, user_collections[i]): username for i, username in
+                   enumerate(valid_usernames)}
 
         for future in as_completed(futures):
             username = futures[future]
             try:
-                future.result()  # No additional processing needed here
+                future.result()  # Ensure any exceptions are raised
             except Exception as e:
                 with print_lock:
-                    print(f"\nAn error occurred while processing data for {username}: {e}")
+                    print(f"Error processing collection for {username}: {e}")
 
     # Check combined collection for contents
     if not combined_collection:
@@ -209,7 +236,7 @@ def main():
     # Sort the combined collection by game name
     sorted_collection = sorted(combined_collection.values(), key=lambda x: x['name'])
 
-    # Create a DataFrame from the sorted collection
+    # Create a DataFrame for further processing or export
     df = pd.DataFrame(sorted_collection)
 
     # Rename columns to be more user-friendly
