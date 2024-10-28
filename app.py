@@ -4,11 +4,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 app = Flask(__name__)
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     combined_collection = {}
-    usernames = []
+    username_string = ""
 
     if request.method == "POST":
         usernames = request.form.get("usernames", "").split(",")
@@ -34,10 +33,19 @@ def index():
         df = format_collection_to_dataframe(combined_collection)
         table_html = df.to_html(index=False, escape=False, table_id="gameTable")
 
+        # Create clickable username links
+        username_string = '<span class="separator">|</span>'.join([
+            f'<a href="https://boardgamegeek.com/user/{username}" target="_blank">{username}</a>'
+            for username in valid_usernames
+        ])
+
+        # Count the number of games in the combined collection
+        game_count = len(combined_collection)
+
     else:
         table_html = ""
 
-    return render_template("index.html", table_html=table_html, usernames=", ".join(usernames))
+    return render_template("index.html", table_html=table_html, username_string=username_string, game_count=game_count)
 
 
 if __name__ == "__main__":
